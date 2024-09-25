@@ -55,6 +55,5 @@ pipeline {
                 // Remove Docker image
                 sh 'docker rmi mlops-app || true'
             }
-        }
     }
 }
