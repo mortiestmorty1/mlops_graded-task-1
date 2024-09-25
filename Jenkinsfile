@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+ 
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone the repository
+                git 'https://github.com/mortiestmorty1/mlops_graded-task-1.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                // Install Python dependencies from requirements.txt
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                // Run the Python application (app.py)
+                sh 'python app.py'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                // Build the Docker image using the Dockerfile
+                sh 'docker build -t mlops-app .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                // Run the Docker container
+                sh 'docker run -d -p 5000:5000 mlops-app'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up after the build
+            sh 'docker rm -f $(docker ps -a -q) || true'
+            sh 'docker rmi mlops-app || true'
+        }
+    }
+}
